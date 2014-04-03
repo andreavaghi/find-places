@@ -1,0 +1,1 @@
+Dummy demo to find places by category using Google Maps API Places Library
