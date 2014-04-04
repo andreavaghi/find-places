@@ -5,7 +5,7 @@
     <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
     <meta charset="utf-8">
     <style>
-      html, body, #map-canvas {
+      html, body {
         height: 100%;
         margin: 0px;
         padding: 0px
@@ -23,22 +23,16 @@ function initialize() {
     latitude = position.coords.latitude;
     longitude = position.coords.longitude;
 
-    console.log(latitude + ' ' + longitude);
-
     var pyrmont = new google.maps.LatLng(latitude, longitude);
-
-    map = new google.maps.Map(document.getElementById('map-canvas'), {
-      center: pyrmont,
-      zoom: 15
-    });
 
     var request = {
       location: pyrmont,
-      radius: 5000,
-      types: ['store']
+      radius: 500,
+      types: ['restaurant']
     };
+    
     infowindow = new google.maps.InfoWindow();
-    var service = new google.maps.places.PlacesService(map);
+    var service = new google.maps.places.PlacesService(document.getElementById('results'));
     service.nearbySearch(request, callback);
   });
 }
@@ -47,7 +41,8 @@ function callback(results, status) {
   console.log(results);
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
-      createMarker(results[i]);
+      //createMarker(results[i]);
+      document.getElementById('results').innerHTML += '<p>' + results[i].name + '<br />' + results[i].reference + '</p>';
     }
   }
 }
@@ -71,5 +66,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
   </head>
   <body>
     <div id="map-canvas"></div>
+    <div id="results"></div>
   </body>
 </html>
