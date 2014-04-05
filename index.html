@@ -12,6 +12,7 @@
       }
     </style>
     <script src="https://maps.googleapis.com/maps/api/js?v=3.exp&sensor=true&libraries=places"></script>
+    <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
     <script>
 var map;
 var infowindow;
@@ -28,7 +29,7 @@ function initialize() {
     var request = {
       location: pyrmont,
       radius: 500,
-      types: ['restaurant']
+      query: 'ristorante'
     };
     
     infowindow = new google.maps.InfoWindow();
@@ -42,7 +43,14 @@ function callback(results, status) {
   if (status == google.maps.places.PlacesServiceStatus.OK) {
     for (var i = 0; i < results.length; i++) {
       //createMarker(results[i]);
-      document.getElementById('results').innerHTML += '<p>' + results[i].name + '<br />' + results[i].reference + '</p>';
+      $('#results').append('<p class="places' + i + '" data-reference="' + results[i].reference + '">' + results[i].name + '</p><hr />');
+
+      console.log($('.places' + i));
+      $('.places' + i).on('click', function(){
+        console.log('clicked!');
+        var reference = $(this).attr('data-reference');
+        getPlacesDetails(reference, i);
+      });
     }
   }
 }
@@ -60,6 +68,25 @@ function createMarker(place) {
   });
 }
 
+function getPlacesDetails(reference, index) {
+  var request = {
+    reference: reference
+  };
+
+  console.log(index);
+  service = new google.maps.places.PlacesService(document.getElementById('places'));
+  service.getDetails(request, callback);
+
+  function callback(place, status) {
+    console.log(status);
+    if (status == google.maps.places.PlacesServiceStatus.OK) {
+      document.getElementById('places').innerHTML += place.name + '<br />';
+      document.getElementById('places').innerHTML += place.adr_address + '<br />';
+      document.getElementById('places').innerHTML += '<img src="' + place.icon + '" /><hr />';
+    }
+  } 
+}
+
 google.maps.event.addDomListener(window, 'load', initialize);
 
     </script>
@@ -67,5 +94,6 @@ google.maps.event.addDomListener(window, 'load', initialize);
   <body>
     <div id="map-canvas"></div>
     <div id="results"></div>
+    <div id="places"></div>
   </body>
 </html>
